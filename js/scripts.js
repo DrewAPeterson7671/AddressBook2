@@ -3,15 +3,16 @@ function AddressBook() {
   this.currentId = 0;
 }
 
+AddressBook.prototype.addContact = function(contact) {
+  contact.id = this.assignId();
+  this.contacts[contact.id] = contact;
+}
+
 AddressBook.prototype.assignId = function() {
   this.currentId += 1;
   return this.currentId;
 }
 
-AddressBook.prototype.addContact = function(contact) {
-  contact.id = this.assignId();
-  this.contacts[contact.id] = contact;
-}
 
 AddressBook.prototype.findContact = function(id) {
   if (this.contacts[id] != undefined ) {
@@ -42,21 +43,34 @@ function Contact(firstName, lastName, phoneNumber) {
 }
 
 Contact.prototype.fullName = function() {
-  return this.firstName + " " + this.lastname;
+  return this.firstName + " " + this.lastName;
 }
 
 
 let addressBook = new AddressBook();
-let contact = new Contact("Ada", "Lovelace", "503-555-0100");
-let contact2 = new Contact("Frida", "Lovelace", "503-556-0101");
-let contact3 = new Contact("Grace", "Hopper", "503-555-0199");
-addressBook.addContact(contact);
-addressBook.addContact(contact2);
-addressBook.addContact(contact3);
-addressBook;
+
+function displayContactDetails(addressBookToDisplay) {
+  let contactsList = $("ul#contacts");
+  let htmlForContactInfo = "";
+  Object.keys(addressBookToDisplay.contacts).forEach(function(key) {
+    const contact = addressBookToDisplay.findContact(key);
+    htmlForContactInfo += "<li id=" + contact.id + ">" + contact.firstName + " " + contact.lastName + "</li>";
+  });
+  contactsList.html(htmlForContactInfo);
+};
 
 
-//$(document).ready(function() {
+$(document).ready(function() {
+  $("form#new-contact").submit(function(event) {
+    event.preventDefault();
+    const inputtedFirstName = $("input#new-first-name").val();
+    const inputtedLastName = $("input#new-last-name").val();
+    const inputtedPhoneNumber = $("input#new-phone-number").val();
+    let newContact = new Contact(inputtedFirstName, inputtedLastName, inputtedPhoneNumber);
+    addressBook.addContact(newContact);
+    displayContactDetails(addressBook);
 
-//})
+  });
+
+});
 
